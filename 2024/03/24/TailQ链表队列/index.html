@@ -26,8 +26,10 @@
 <meta property="og:image" content="https://picgozz.oss-cn-beijing.aliyuncs.com/img/202403241501455.svg">
 <meta property="og:image" content="https://picgozz.oss-cn-beijing.aliyuncs.com/img/202403241937540.svg">
 <meta property="og:image" content="https://picgozz.oss-cn-beijing.aliyuncs.com/img/202403241944111.svg">
+<meta property="og:image" content="https://picgozz.oss-cn-beijing.aliyuncs.com/img/202403311229394.svg">
+<meta property="og:image" content="https://picgozz.oss-cn-beijing.aliyuncs.com/img/202403311308806.svg">
 <meta property="article:published_time" content="2024-03-24T06:18:44.000Z">
-<meta property="article:modified_time" content="2024-03-28T14:38:49.216Z">
+<meta property="article:modified_time" content="2024-03-31T05:09:02.427Z">
 <meta property="article:author" content="schwarZfahreR">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://picgozz.oss-cn-beijing.aliyuncs.com/img/202403241501455.svg">
@@ -252,7 +254,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          2.4k 字
+          2.6k 字
         
       </span>
     
@@ -263,7 +265,7 @@
         
         
         
-          20 分钟
+          22 分钟
         
       </span>
     
@@ -313,7 +315,7 @@
               <p id="updated-time" class="note note-info" style="">
                 
                   
-                    本文最后更新于 2024年3月28日 晚上
+                    本文最后更新于 2024年3月31日 下午
                   
                 
               </p>
@@ -430,7 +432,12 @@
 <h3 id="TAILQ-FOREACH-REVERSE"><a href="#TAILQ-FOREACH-REVERSE" class="headerlink" title="TAILQ_FOREACH_REVERSE"></a>TAILQ_FOREACH_REVERSE</h3><p>这个接口用于反向遍历tailQ。</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">define</span> TAILQ_FOREACH_REVERSE(var, head, headname, field)		\</span><br><span class="hljs-meta">	for((var) = TAILQ_LAST(head, headname);				\</span><br><span class="hljs-meta">	    (var) != TAILQ_END(head);					\</span><br><span class="hljs-meta">	    (var) = TAILQ_PREV(var, headname, field))</span><br><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> TAILQ_PREV(elm, headname, field)				\</span><br><span class="hljs-meta">	(*(((struct headname *)((elm)-&gt;field.tqe_prev))-&gt;tqh_last))</span><br></code></pre></td></tr></table></figure>
 
+<p>TAILQ_PREV可以理解为pre节点的pre指针再解引用，就是pre节点的pre节点的next指针，解引用后是pre节点的node本体。</p>
 <p>这里有一个地方不是很好理解，就是前向遍历为什么结束判断的TAILQ_END也定义为NULL。其实看tailQ结构图示就很直观了，第一个节点的tqe_prev指针指向list_head，而list_head的last指针指向最后一个节点的tqe_next域，解引用之后正好就是NULL。</p>
+<h1 id="3、使用心得"><a href="#3、使用心得" class="headerlink" title="3、使用心得"></a>3、使用心得</h1><p>tailQ不是线程安全的，这一点上很少会有误用。但是，就算是单线程使用，如果对已经在列表中的元素执行头插，那么正向遍历会有链表成环的风险（如图中橙色的线），反向遍历会有节点被截断丢失，很多时候我们无意中会引发这个问题，在排查的时候最好能尽快反应。</p>
+<p><img src="https://picgozz.oss-cn-beijing.aliyuncs.com/img/202403311229394.svg" srcset="/img/loading.gif" lazyload alt="tailq_dup_head"></p>
+<p>尾插则不会有这个问题，因为尾插不管正向遍历还是反向遍历，都需要next指针去获得下一个节点，而尾插新节点next指针一定置为了null，所以尾插法只会引起节点丢失。</p>
+<p><img src="https://picgozz.oss-cn-beijing.aliyuncs.com/img/202403311308806.svg" srcset="/img/loading.gif" lazyload alt="tailq_dup_tail"></p>
 
                 
               </div>
