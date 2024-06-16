@@ -1,0 +1,799 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.jpeg">
+  <link rel="icon" href="/img/favicon.jpeg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="schwarZfahreR">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="学习源码的第一步，当然是编译了。无论是调试学习还是修改验证，编译都是必须迈过的坎儿。学习计算机这些年，对于这种大型项目的编译，我是比较怵的，搭个编译环境就已经很困难了，更不要提过程中的各种报错了。好在现在可以在docker中编译，环境崩了咱就推到重来，不至于重装系统了。 前期准备本文使用https:&#x2F;&#x2F;leimao.github.io&#x2F;blog&#x2F;Build-Develop-PyTorch&#x2F;中提供的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PyTorch源码学习：源码编译">
+<meta property="og:url" content="https://schwarzfahrer666.github.io/2024/06/16/PyTorch%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%EF%BC%9A%E6%BA%90%E7%A0%81%E7%BC%96%E8%AF%91/index.html">
+<meta property="og:site_name" content="白嫖笔记">
+<meta property="og:description" content="学习源码的第一步，当然是编译了。无论是调试学习还是修改验证，编译都是必须迈过的坎儿。学习计算机这些年，对于这种大型项目的编译，我是比较怵的，搭个编译环境就已经很困难了，更不要提过程中的各种报错了。好在现在可以在docker中编译，环境崩了咱就推到重来，不至于重装系统了。 前期准备本文使用https:&#x2F;&#x2F;leimao.github.io&#x2F;blog&#x2F;Build-Develop-PyTorch&#x2F;中提供的">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://picgozz.oss-cn-beijing.aliyuncs.com/img/202406161343199.png">
+<meta property="og:image" content="https://picgozz.oss-cn-beijing.aliyuncs.com/img/202406161343241.png">
+<meta property="og:image" content="https://picgozz.oss-cn-beijing.aliyuncs.com/img/202406161343285.png">
+<meta property="article:published_time" content="2024-06-16T05:41:53.000Z">
+<meta property="article:modified_time" content="2024-06-16T05:43:15.643Z">
+<meta property="article:author" content="schwarZfahreR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://picgozz.oss-cn-beijing.aliyuncs.com/img/202406161343199.png">
+  
+  
+  
+  <title>PyTorch源码学习：源码编译 - 白嫖笔记</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"schwarzfahrer666.github.io","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"zZD4dEz6UfSSKIFna0oqLh4D-gzGzoHsz","app_key":"lAoUB8QTCE6hxhyweLiMljPv","server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 7.1.1"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong class="navbar-title">白嫖笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="PyTorch源码学习：源码编译"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-06-16 13:41" pubdate>
+          2024年6月16日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          1.6k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          14 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">PyTorch源码学习：源码编译</h1>
+            
+              <p id="updated-time" class="note note-info" style="">
+                
+                  
+                    本文最后更新于 2024年6月16日 下午
+                  
+                
+              </p>
+            
+            
+              <div class="markdown-body">
+                
+                <p>学习源码的第一步，当然是编译了。无论是调试学习还是修改验证，编译都是必须迈过的坎儿。学习计算机这些年，对于这种大型项目的编译，我是比较怵的，搭个编译环境就已经很困难了，更不要提过程中的各种报错了。好在现在可以在docker中编译，环境崩了咱就推到重来，不至于重装系统了。</p>
+<h1 id="前期准备"><a href="#前期准备" class="headerlink" title="前期准备"></a>前期准备</h1><p>本文使用<a target="_blank" rel="noopener" href="https://leimao.github.io/blog/Build-Develop-PyTorch/%E4%B8%AD%E6%8F%90%E4%BE%9B%E7%9A%84docker">https://leimao.github.io/blog/Build-Develop-PyTorch/中提供的docker</a> file，编译的是GPU版本的pytorch 2.1.0，基于ubuntu22.04+cuda12.1+cudnn8，需要查询下你的GPU是否支持：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">nvidia-smi<br></code></pre></td></tr></table></figure>
+
+<p><img src="https://picgozz.oss-cn-beijing.aliyuncs.com/img/202406161343199.png" srcset="/img/loading.gif" lazyload alt="image-20240616112231819"></p>
+<p>这里显示的是安装的GPU驱动最高支持的cuda版本。</p>
+<p>下面正式开始编译吧！</p>
+<h1 id="编译过程"><a href="#编译过程" class="headerlink" title="编译过程"></a>编译过程</h1><p>先创建一个空的工作目录，把本次需要的东西都一股脑儿放里面吧！</p>
+<h2 id="一、构建docker镜像"><a href="#一、构建docker镜像" class="headerlink" title="一、构建docker镜像"></a>一、构建docker镜像</h2><p>首先写个dockerfile，就命名为torch_build.dockerfile，放在工作目录中。</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><code class="hljs dockerfile"><span class="hljs-keyword">FROM</span> nvcr.io/nvidia/cuda:<span class="hljs-number">12.1</span>.<span class="hljs-number">1</span>-cudnn8-devel-ubuntu22.<span class="hljs-number">04</span><br> <br><span class="hljs-keyword">ARG</span> CMAKE_VERSION=<span class="hljs-number">3.28</span>.<span class="hljs-number">3</span><br><span class="hljs-keyword">ARG</span> NUM_JOBS=<span class="hljs-number">8</span><br> <br><span class="hljs-keyword">ENV</span> DEBIAN_FRONTEND noninteractive<br> <br><span class="hljs-comment"># Install package dependencies</span><br><span class="hljs-keyword">RUN</span><span class="language-bash"> apt-get update &amp;&amp; \</span><br><span class="language-bash">    apt-get install -y --no-install-recommends \</span><br><span class="language-bash">        build-essential \</span><br><span class="language-bash">        software-properties-common \</span><br><span class="language-bash">        autoconf \</span><br><span class="language-bash">        automake \</span><br><span class="language-bash">        libtool \</span><br><span class="language-bash">        libssl-dev \</span><br><span class="language-bash">        pkg-config \</span><br><span class="language-bash">        ca-certificates \</span><br><span class="language-bash">        wget \</span><br><span class="language-bash">        git \</span><br><span class="language-bash">        curl \</span><br><span class="language-bash">        libjpeg-dev \</span><br><span class="language-bash">        libpng-dev \</span><br><span class="language-bash">        language-pack-en \</span><br><span class="language-bash">        locales \</span><br><span class="language-bash">        locales-all \</span><br><span class="language-bash">        python3 \</span><br><span class="language-bash">        python3-py \</span><br><span class="language-bash">        python3-dev \</span><br><span class="language-bash">        python3-pip \</span><br><span class="language-bash">        python3-numpy \</span><br><span class="language-bash">        python3-pytest \</span><br><span class="language-bash">        python3-setuptools \</span><br><span class="language-bash">        libprotobuf-dev \</span><br><span class="language-bash">        protobuf-compiler \</span><br><span class="language-bash">        zlib1g-dev \</span><br><span class="language-bash">        swig \</span><br><span class="language-bash">        vim \</span><br><span class="language-bash">        gdb \</span><br><span class="language-bash">        valgrind &amp;&amp; \</span><br><span class="language-bash">    apt-get clean</span><br> <br><span class="hljs-keyword">RUN</span><span class="language-bash"> <span class="hljs-built_in">cd</span> /usr/local/bin &amp;&amp; \</span><br><span class="language-bash">    <span class="hljs-built_in">ln</span> -s /usr/bin/python3 python &amp;&amp; \</span><br><span class="language-bash">    <span class="hljs-built_in">ln</span> -s /usr/bin/pip3 pip &amp;&amp; \</span><br><span class="language-bash">    pip install --upgrade pip setuptools wheel</span><br> <br><span class="hljs-comment"># System locale</span><br><span class="hljs-comment"># Important for UTF-8</span><br><span class="hljs-keyword">ENV</span> LC_ALL en_US.UTF-<span class="hljs-number">8</span><br><span class="hljs-keyword">ENV</span> LANG en_US.UTF-<span class="hljs-number">8</span><br><span class="hljs-keyword">ENV</span> LANGUAGE en_US.UTF-<span class="hljs-number">8</span><br> <br><span class="hljs-comment"># Install CMake</span><br><span class="hljs-keyword">RUN</span><span class="language-bash"> <span class="hljs-built_in">cd</span> /tmp &amp;&amp; \</span><br><span class="language-bash">    wget https://github.com/Kitware/CMake/releases/download/v<span class="hljs-variable">$&#123;CMAKE_VERSION&#125;</span>/cmake-<span class="hljs-variable">$&#123;CMAKE_VERSION&#125;</span>.tar.gz &amp;&amp; \</span><br><span class="language-bash">    tar xzf cmake-<span class="hljs-variable">$&#123;CMAKE_VERSION&#125;</span>.tar.gz &amp;&amp; \</span><br><span class="language-bash">    <span class="hljs-built_in">cd</span> cmake-<span class="hljs-variable">$&#123;CMAKE_VERSION&#125;</span> &amp;&amp; \</span><br><span class="language-bash">    ./bootstrap &amp;&amp; \</span><br><span class="language-bash">    make -j<span class="hljs-variable">$&#123;NUM_JOBS&#125;</span> &amp;&amp; \</span><br><span class="language-bash">    make install &amp;&amp; \</span><br><span class="language-bash">    <span class="hljs-built_in">rm</span> -rf /tmp/*</span><br> <br><span class="hljs-keyword">RUN</span><span class="language-bash"> <span class="hljs-built_in">cd</span> /tmp &amp;&amp; \</span><br><span class="language-bash">    wget https://raw.githubusercontent.com/pytorch/pytorch/master/requirements.txt &amp;&amp; \</span><br><span class="language-bash">    pip install -r requirements.txt</span><br> <br><span class="hljs-keyword">RUN</span><span class="language-bash"> pip install lintrunner</span><br></code></pre></td></tr></table></figure>
+
+<p>使用dockerfile构建一个镜像，需要指定使用的cMake版本。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">CMAKE_VERSION=3.25.1<br>docker build -f torch_build.dockerfile --build-arg CMAKE_VERSION=$&#123;CMAKE_VERSION&#125; --tag=torch-build:0.0.1 . #敲命令时千万别忘了这个&quot;.&quot;!!<br></code></pre></td></tr></table></figure>
+
+<p>构建镜像需要下载一堆依赖，网络条件不好的话很可能下载失败，整体时间也比较长。可以考虑换个源（系统的源和docker镜像源）加快下载速度，如果失败次数太多了，就换换网络试试？（言止于此，诸君自斟）</p>
+<h2 id="二、下载pytorch源码"><a href="#二、下载pytorch源码" class="headerlink" title="二、下载pytorch源码"></a>二、下载pytorch源码</h2><p>在工作目录下运行：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">git clone --recursive https://github.com/pytorch/pytorch<br></code></pre></td></tr></table></figure>
+
+<p>这条命令会下载pytorch源码以及一些第三方的库。下载源码才是对网络最大的考验，有些库会反复失败失败，但是一定要保证pytorch主体代码下载成功，其他third_party下的库可以等后面再补。</p>
+<h2 id="三、创建docker容器编译环境"><a href="#三、创建docker容器编译环境" class="headerlink" title="三、创建docker容器编译环境"></a>三、创建docker容器编译环境</h2><p>创建docker容器时，需要把工作目录映射到容器内，并且使用本机的gpu：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">docker run -it --gpus all -v $(pwd):/mnt torch-build:0.0.1<br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p>遇到报错<strong>docker: Error response from daemon: could not select device driver “” with capabilities: [[gpu]]</strong></p>
+<p>需要安装nvidia-docker。</p>
+<p>准备好脚本添加nvidia的源：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs shell">sudo curl -s -L https://nvidia.github.io/nvidia-container-runtime/gpgkey | \<br>  sudo apt-key add -<br>distribution=$(. /etc/os-release;echo $ID$VERSION_ID)<br>sudo curl -s -L https://nvidia.github.io/nvidia-container-runtime/$distribution/nvidia-container-runtime.list | \<br>  sudo tee /etc/apt/sources.list.d/nvidia-container-runtime.list<br>sudo apt-get update<br></code></pre></td></tr></table></figure>
+
+<p>运行以上脚本，然后安装nvidia-container-runtime和nvidia-docker2：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">sudo apt-get install nvidia-container-runtime<br>sudo apt-get install nvidia-docker2<br></code></pre></td></tr></table></figure>
+
+<p>然后重启docker服务：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">sudo systemctl restart docker<br></code></pre></td></tr></table></figure>
+
+<p>之后重新运行docker run命令。</p>
+</blockquote>
+<h2 id="四、配置编译环境"><a href="#四、配置编译环境" class="headerlink" title="四、配置编译环境"></a>四、配置编译环境</h2><p>pytorch官方推荐使用conda管理编译环境，我们也就不折腾了，在docker容器里安装conda，解放一下自己。首先下载conda并准备好conda安装脚本：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">wget https://repo.anaconda.com/archive/Anaconda3-2022.10-Linux-x86_64.sh #实践这个版本可以编译成功<br></code></pre></td></tr></table></figure>
+
+<p>安装脚本：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_">#</span><span class="language-bash">!/bin/bash</span><br>apt install libgl1-mesa-glx libegl1-mesa libxrandr2 libxrandr2 libxss1 libxcursor1 libxcomposite1 libasound2 libxi6 libxtst6 &amp;&amp; bash ./Anaconda3-2022.10-Linux-x86_64.sh &amp;&amp; echo -e &#x27;export PATH=&quot;~/anaconda3/bin&quot;:$PATH\nsource ~/anaconda3/bin/activate&#x27; &gt;&gt; ~/.bashrc<br>source ~/.bashrc<br></code></pre></td></tr></table></figure>
+
+<p>执行脚本后，如果conda环境没有启动，再<code>source ~/.bashrc</code>一次。</p>
+<p>安装好Conda后，创建一个虚拟环境，并激活这个环境：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">conda create -n torch_build<br>conda activate torch_build<br></code></pre></td></tr></table></figure>
+
+<p><strong>进入下载好的pytorch源码目录</strong>，然后pip安装依赖：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">pip install -r requirements.txt<br></code></pre></td></tr></table></figure>
+
+<p>使用conda安装依赖：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs shell">conda install cmake ninja<br>conda install pyyaml<br>conda install intel::mkl-static intel::mkl-include<br>conda install -c pytorch magma-cuda*<br></code></pre></td></tr></table></figure>
+
+<p>一定要确保这些依赖安装成功。</p>
+<p>同步pytorch源码以及其子模块：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">git submodule sync<br>git submodule update --init --recursive<br></code></pre></td></tr></table></figure>
+
+<p>由于网络原因，可能只下载了一个空文件夹，编译源码的时候会提示你找不到子模块的代码。这时候需要删除提示模块的文件夹，然后重新执行以上两条命令。</p>
+<blockquote>
+<p>遇到报错 <strong>fatal: detected dubious ownership in repository at XXX</strong></p>
+<p>是因为pytorch源代码共享给了docker容器，需要执行以下命令：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_">&gt;</span><span class="language-bash">git config --global --add safe.directory <span class="hljs-string">&quot;*&quot;</span></span><br></code></pre></td></tr></table></figure>
+</blockquote>
+<h2 id="五、开始编译"><a href="#五、开始编译" class="headerlink" title="五、开始编译"></a>五、开始编译</h2><p>保持在pytorch源代码目录下，进行编译操作。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">export CMAKE_PREFIX_PATH=$&#123;CONDA_PREFIX:-&quot;$(dirname $(which conda))/../&quot;&#125;<br>MAX_JOBS=4 DEBUG=1 USE_DISTRIBUTED=0 BUILD_TEST=1 python setup.py develop<br></code></pre></td></tr></table></figure>
+
+<p>如果编译失败，执行以下命令，然后再重新编译：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">python setup.py clean<br></code></pre></td></tr></table></figure>
+
+<p>setup.py中有很多编译选项，摘列如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># Welcome to the PyTorch setup.py.</span><br><span class="hljs-comment"># Environment variables you are probably interested in:</span><br><span class="hljs-comment">#</span><br><span class="hljs-comment">#   DEBUG  添加debug选项编译源码</span><br><span class="hljs-comment">#     build with -O0 and -g (debug symbols)</span><br><span class="hljs-comment">#</span><br><span class="hljs-comment">#   REL_WITH_DEB_INFO</span><br><span class="hljs-comment">#     build with optimizations and -g (debug symbols)</span><br><span class="hljs-comment">#</span><br><span class="hljs-comment">#   USE_CUSTOM_DEBINFO=&quot;path/to/file1.cpp;path/to/file2.cpp&quot;</span><br><span class="hljs-comment">#     build with debug info only for specified files</span><br><span class="hljs-comment">#</span><br><span class="hljs-comment">#   MAX_JOBS  并发编译数，不要设置太大，会爆内存</span><br><span class="hljs-comment">#     maximum number of compile jobs we should use to compile your code</span><br><span class="hljs-comment">#</span><br><span class="hljs-comment">#   USE_CUDA=0</span><br><span class="hljs-comment">#     disables CUDA build</span><br><span class="hljs-comment">#</span><br><span class="hljs-comment">#   CFLAGS</span><br><span class="hljs-comment">#     flags to apply to both C and C++ files to be compiled (a quirk of setup.py</span><br><span class="hljs-comment">#     which we have faithfully adhered to in our build system is that CFLAGS</span><br><span class="hljs-comment">#     also applies to C++ files (unless CXXFLAGS is set), in contrast to the</span><br><span class="hljs-comment">#     default behavior of autogoo and cmake build systems.)</span><br><span class="hljs-comment">#</span><br><span class="hljs-comment">#   CC  指定C/C++编译器</span><br><span class="hljs-comment">#     the C/C++ compiler to use</span><br><span class="hljs-comment">#</span><br><span class="hljs-comment"># Environment variables for feature toggles:</span><br><span class="hljs-comment">#</span><br><span class="hljs-comment">#   DEBUG_CUDA=1</span><br><span class="hljs-comment">#     if used in conjunction with DEBUG or REL_WITH_DEB_INFO, will also</span><br><span class="hljs-comment">#     build CUDA kernels with -lineinfo --source-in-ptx.  Note that</span><br><span class="hljs-comment">#     on CUDA 12 this may cause nvcc to OOM, so this is disabled by default.</span><br><br><span class="hljs-comment">#   USE_CUDNN=0</span><br><span class="hljs-comment">#     disables the cuDNN build</span><br><span class="hljs-comment">#</span><br><span class="hljs-comment">#   USE_CUSPARSELT=0</span><br><span class="hljs-comment">#     disables the cuSPARSELt build</span><br><span class="hljs-comment">#</span><br><span class="hljs-comment">#   USE_FBGEMM=0</span><br><span class="hljs-comment">#     disables the FBGEMM build</span><br><span class="hljs-comment">#</span><br><span class="hljs-comment">#   USE_KINETO=0</span><br><span class="hljs-comment">#     disables usage of libkineto library for profiling</span><br><span class="hljs-comment">#</span><br><span class="hljs-comment">#   USE_NUMPY=0</span><br><span class="hljs-comment">#     disables the NumPy build</span><br><span class="hljs-comment">#</span><br><span class="hljs-comment">#   BUILD_TEST=0</span><br><span class="hljs-comment">#     disables the test build</span><br><span class="hljs-comment">#</span><br><span class="hljs-comment">#   USE_MKLDNN=0</span><br><span class="hljs-comment">#     disables use of MKLDNN</span><br><span class="hljs-comment">#</span><br><span class="hljs-comment">#   USE_MKLDNN_ACL</span><br><span class="hljs-comment">#     enables use of Compute Library backend for MKLDNN on Arm;</span><br><span class="hljs-comment">#     USE_MKLDNN must be explicitly enabled.</span><br><span class="hljs-comment">#</span><br><span class="hljs-comment">#   MKLDNN_CPU_RUNTIME</span><br><span class="hljs-comment">#     MKL-DNN threading mode: TBB or OMP (default)</span><br><span class="hljs-comment">#</span><br><span class="hljs-comment">#   USE_STATIC_MKL</span><br><span class="hljs-comment">#     Prefer to link with MKL statically - Unix only</span><br><span class="hljs-comment">#   USE_ITT=0</span><br><span class="hljs-comment">#     disable use of Intel(R) VTune Profiler&#x27;s ITT functionality</span><br><span class="hljs-comment">#</span><br><span class="hljs-comment">#   USE_NNPACK=0</span><br><span class="hljs-comment">#     disables NNPACK build</span><br><span class="hljs-comment">#</span><br><span class="hljs-comment">#   USE_QNNPACK=0</span><br><span class="hljs-comment">#     disables QNNPACK build (quantized 8-bit operators)</span><br><span class="hljs-comment">#</span><br><span class="hljs-comment">#   USE_DISTRIBUTED=0</span><br><span class="hljs-comment">#     disables distributed (c10d, gloo, mpi, etc.) build</span><br><span class="hljs-comment">#</span><br><span class="hljs-comment">#   USE_TENSORPIPE=0</span><br><span class="hljs-comment">#     disables distributed Tensorpipe backend build</span><br><span class="hljs-comment">#</span><br><span class="hljs-comment">#   USE_GLOO=0</span><br><span class="hljs-comment">#     disables distributed gloo backend build</span><br><span class="hljs-comment">#</span><br><span class="hljs-comment">#   USE_MPI=0</span><br><span class="hljs-comment">#     disables distributed MPI backend build</span><br><span class="hljs-comment">#</span><br><span class="hljs-comment">#   USE_SYSTEM_NCCL=0</span><br><span class="hljs-comment">#     disables use of system-wide nccl (we will use our submoduled</span><br><span class="hljs-comment">#     copy in third_party/nccl)</span><br><span class="hljs-comment">#</span><br><span class="hljs-comment">#   USE_OPENMP=0</span><br><span class="hljs-comment">#     disables use of OpenMP for parallelization</span><br><span class="hljs-comment">#</span><br><span class="hljs-comment">#   USE_FLASH_ATTENTION=0</span><br><span class="hljs-comment">#     disables building flash attention for scaled dot product attention</span><br><span class="hljs-comment">#</span><br><span class="hljs-comment">#   USE_MEM_EFF_ATTENTION=0</span><br><span class="hljs-comment">#    disables building memory efficient attention for scaled dot product attention</span><br><span class="hljs-comment">#</span><br><span class="hljs-comment">#   BUILD_BINARY</span><br><span class="hljs-comment">#     enables the additional binaries/ build</span><br><span class="hljs-comment">#</span><br><span class="hljs-comment">#   ATEN_AVX512_256=TRUE</span><br><span class="hljs-comment">#     ATen AVX2 kernels can use 32 ymm registers, instead of the default 16.</span><br><span class="hljs-comment">#     This option can be used if AVX512 doesn&#x27;t perform well on a machine.</span><br><span class="hljs-comment">#     The FBGEMM library also uses AVX512_256 kernels on Xeon D processors,</span><br><span class="hljs-comment">#     but it also has some (optimized) assembly code.</span><br><span class="hljs-comment">#</span><br><span class="hljs-comment">#   PYTORCH_BUILD_VERSION</span><br><span class="hljs-comment">#   PYTORCH_BUILD_NUMBER</span><br><span class="hljs-comment">#     specify the version of PyTorch, rather than the hard-coded version</span><br><span class="hljs-comment">#     in this file; used when we&#x27;re building binaries for distribution</span><br><span class="hljs-comment">#</span><br><span class="hljs-comment">#   TORCH_CUDA_ARCH_LIST</span><br><span class="hljs-comment">#     specify which CUDA architectures to build for.</span><br><span class="hljs-comment">#     ie `TORCH_CUDA_ARCH_LIST=&quot;6.0;7.0&quot;`</span><br><span class="hljs-comment">#     These are not CUDA versions, instead, they specify what</span><br><span class="hljs-comment">#     classes of NVIDIA hardware we should generate PTX for.</span><br><span class="hljs-comment">#</span><br><span class="hljs-comment">#   PYTORCH_ROCM_ARCH</span><br><span class="hljs-comment">#     specify which AMD GPU targets to build for.</span><br><span class="hljs-comment">#     ie `PYTORCH_ROCM_ARCH=&quot;gfx900;gfx906&quot;`</span><br><span class="hljs-comment">#</span><br><span class="hljs-comment">#   ONNX_NAMESPACE</span><br><span class="hljs-comment">#     specify a namespace for ONNX built here rather than the hard-coded</span><br><span class="hljs-comment">#     one in this file; needed to build with other frameworks that share ONNX.</span><br><span class="hljs-comment">#</span><br><span class="hljs-comment">#   BLAS</span><br><span class="hljs-comment">#     BLAS to be used by Caffe2. Can be MKL, Eigen, ATLAS, FlexiBLAS, or OpenBLAS. If set</span><br><span class="hljs-comment">#     then the build will fail if the requested BLAS is not found, otherwise</span><br><span class="hljs-comment">#     the BLAS will be chosen based on what is found on your system.</span><br><span class="hljs-comment">#</span><br><span class="hljs-comment">#   MKL_THREADING</span><br><span class="hljs-comment">#     MKL threading mode: SEQ, TBB or OMP (default)</span><br><span class="hljs-comment">#</span><br><span class="hljs-comment">#   USE_ROCM_KERNEL_ASSERT=1</span><br><span class="hljs-comment">#     Enable kernel assert in ROCm platform</span><br><span class="hljs-comment">#</span><br><span class="hljs-comment"># Environment variables we respect (these environment variables are</span><br><span class="hljs-comment"># conventional and are often understood/set by other software.)</span><br><span class="hljs-comment">#</span><br><span class="hljs-comment">#   CUDA_HOME (Linux/OS X)</span><br><span class="hljs-comment">#   CUDA_PATH (Windows)</span><br><span class="hljs-comment">#     specify where CUDA is installed; usually /usr/local/cuda or</span><br><span class="hljs-comment">#     /usr/local/cuda-x.y</span><br><span class="hljs-comment">#   CUDAHOSTCXX</span><br><span class="hljs-comment">#     specify a different compiler than the system one to use as the CUDA</span><br><span class="hljs-comment">#     host compiler for nvcc.</span><br><span class="hljs-comment">#</span><br><span class="hljs-comment">#   CUDA_NVCC_EXECUTABLE</span><br><span class="hljs-comment">#     Specify a NVCC to use. This is used in our CI to point to a cached nvcc</span><br><span class="hljs-comment">#</span><br><span class="hljs-comment">#   CUDNN_LIB_DIR</span><br><span class="hljs-comment">#   CUDNN_INCLUDE_DIR</span><br><span class="hljs-comment">#   CUDNN_LIBRARY</span><br><span class="hljs-comment">#     specify where cuDNN is installed</span><br><span class="hljs-comment">#</span><br><span class="hljs-comment">#   MIOPEN_LIB_DIR</span><br><span class="hljs-comment">#   MIOPEN_INCLUDE_DIR</span><br><span class="hljs-comment">#   MIOPEN_LIBRARY</span><br><span class="hljs-comment">#     specify where MIOpen is installed</span><br><span class="hljs-comment">#</span><br><span class="hljs-comment">#   NCCL_ROOT</span><br><span class="hljs-comment">#   NCCL_LIB_DIR</span><br><span class="hljs-comment">#   NCCL_INCLUDE_DIR</span><br><span class="hljs-comment">#     specify where nccl is installed</span><br><span class="hljs-comment">#</span><br><span class="hljs-comment">#   NVTOOLSEXT_PATH (Windows only)</span><br><span class="hljs-comment">#     specify where nvtoolsext is installed</span><br><span class="hljs-comment">#</span><br><span class="hljs-comment">#   ACL_ROOT_DIR</span><br><span class="hljs-comment">#     specify where Compute Library is installed</span><br><span class="hljs-comment">#</span><br><span class="hljs-comment">#   LIBRARY_PATH</span><br><span class="hljs-comment">#   LD_LIBRARY_PATH</span><br><span class="hljs-comment">#     we will search for libraries in these paths</span><br><span class="hljs-comment">#</span><br><span class="hljs-comment">#   ATEN_THREADING</span><br><span class="hljs-comment">#     ATen parallel backend to use for intra- and inter-op parallelism</span><br><span class="hljs-comment">#     possible values:</span><br><span class="hljs-comment">#       OMP - use OpenMP for intra-op and native backend for inter-op tasks</span><br><span class="hljs-comment">#       NATIVE - use native thread pool for both intra- and inter-op tasks</span><br><span class="hljs-comment">#</span><br><span class="hljs-comment">#   USE_SYSTEM_LIBS (work in progress)</span><br><span class="hljs-comment">#      Use system-provided libraries to satisfy the build dependencies.</span><br><span class="hljs-comment">#      When turned on, the following cmake variables will be toggled as well:</span><br><span class="hljs-comment">#        USE_SYSTEM_CPUINFO=ON USE_SYSTEM_SLEEF=ON BUILD_CUSTOM_PROTOBUF=OFF</span><br><span class="hljs-comment">#</span><br><span class="hljs-comment">#   USE_MIMALLOC</span><br><span class="hljs-comment">#      Static link mimalloc into C10, and use mimalloc in alloc_cpu &amp; alloc_free.</span><br><span class="hljs-comment">#      By default, It is only enabled on Windows.</span><br><span class="hljs-comment">#</span><br><span class="hljs-comment">#   USE_PRIORITIZED_TEXT_FOR_LD</span><br><span class="hljs-comment">#      Uses prioritized text form cmake/prioritized_text.txt for LD</span><br><span class="hljs-comment">#</span><br><span class="hljs-comment">#   BUILD_LIBTORCH_WHL</span><br><span class="hljs-comment">#      Builds libtorch.so and its dependencies as a wheel</span><br><span class="hljs-comment">#</span><br><span class="hljs-comment">#   BUILD_PYTHON_ONLY</span><br><span class="hljs-comment">#      Builds pytorch as a wheel using libtorch.so from a seperate wheel</span><br></code></pre></td></tr></table></figure>
+
+<p>最后编译成功后，可以导入torch试试。</p>
+<p><img src="https://picgozz.oss-cn-beijing.aliyuncs.com/img/202406161343241.png" srcset="/img/loading.gif" lazyload alt="image-20240616131408327"></p>
+<blockquote>
+<p>遇到报错：<strong>ImportError: {path}&#x2F;libstdc++.so.6: version &#96;GLIBCXX_3.4.30’ not found</strong></p>
+<p>先检查下&#x2F;usr&#x2F;lib下的库支不支持该版本：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_">&gt;</span><span class="language-bash">strings /usr/lib/x86_64-linux-gnu/libstdc++.so.6 | grep GLIBCXX</span><br></code></pre></td></tr></table></figure>
+
+<p>如果存在：</p>
+<p><img src="https://picgozz.oss-cn-beijing.aliyuncs.com/img/202406161343285.png" srcset="/img/loading.gif" lazyload alt="image-20240616131923931"></p>
+<p>则把&#x2F;usr&#x2F;lib下的这个库替换到报错的{path}中。</p>
+</blockquote>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>PyTorch源码学习：源码编译</div>
+      <div>https://schwarzfahrer666.github.io/2024/06/16/PyTorch源码学习：源码编译/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>schwarZfahreR</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年6月16日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/03/24/TailQ%E9%93%BE%E8%A1%A8%E9%98%9F%E5%88%97/" title="TailQ链表队列">
+                        <span class="hidden-mobile">TailQ链表队列</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"zZD4dEz6UfSSKIFna0oqLh4D-gzGzoHsz","appKey":"lAoUB8QTCE6hxhyweLiMljPv","path":"window.location.pathname","placeholder":null,"avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
