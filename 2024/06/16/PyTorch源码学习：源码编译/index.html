@@ -16,18 +16,18 @@
   <meta name="author" content="schwarZfahreR">
   <meta name="keywords" content="">
   
-    <meta name="description" content="学习源码的第一步，当然是编译了。无论是调试学习还是修改验证，编译都是必须迈过的坎儿。学习计算机这些年，对于这种大型项目的编译，我是比较怵的，搭个编译环境就已经很困难了，更不要提过程中的各种报错了。好在现在可以在docker中编译，环境崩了咱就推到重来，不至于重装系统了。 前期准备本文使用https:&#x2F;&#x2F;leimao.github.io&#x2F;blog&#x2F;Build-Develop-PyTorch&#x2F;中提供的">
+    <meta name="description" content="学习源码的第一步，当然是编译了。无论是调试学习还是修改验证，编译都是必须迈过的坎儿。学习计算机这些年，对于这种大型项目的编译，我是比较怵的，搭个编译环境就已经很困难了，更不要提过程中的各种报错了。好在现在可以在docker中编译，环境崩了咱就推到重来，不至于重装系统了。 前期准备本文使用Lei Mao’s LOG BOOK中提供的docker file，编译的是GPU版本的pytorch 2.1.">
 <meta property="og:type" content="article">
 <meta property="og:title" content="PyTorch源码学习：源码编译">
 <meta property="og:url" content="https://schwarzfahrer666.github.io/2024/06/16/PyTorch%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%EF%BC%9A%E6%BA%90%E7%A0%81%E7%BC%96%E8%AF%91/index.html">
 <meta property="og:site_name" content="白嫖笔记">
-<meta property="og:description" content="学习源码的第一步，当然是编译了。无论是调试学习还是修改验证，编译都是必须迈过的坎儿。学习计算机这些年，对于这种大型项目的编译，我是比较怵的，搭个编译环境就已经很困难了，更不要提过程中的各种报错了。好在现在可以在docker中编译，环境崩了咱就推到重来，不至于重装系统了。 前期准备本文使用https:&#x2F;&#x2F;leimao.github.io&#x2F;blog&#x2F;Build-Develop-PyTorch&#x2F;中提供的">
+<meta property="og:description" content="学习源码的第一步，当然是编译了。无论是调试学习还是修改验证，编译都是必须迈过的坎儿。学习计算机这些年，对于这种大型项目的编译，我是比较怵的，搭个编译环境就已经很困难了，更不要提过程中的各种报错了。好在现在可以在docker中编译，环境崩了咱就推到重来，不至于重装系统了。 前期准备本文使用Lei Mao’s LOG BOOK中提供的docker file，编译的是GPU版本的pytorch 2.1.">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://picgozz.oss-cn-beijing.aliyuncs.com/img/202406161343199.png">
 <meta property="og:image" content="https://picgozz.oss-cn-beijing.aliyuncs.com/img/202406161343241.png">
 <meta property="og:image" content="https://picgozz.oss-cn-beijing.aliyuncs.com/img/202406161343285.png">
 <meta property="article:published_time" content="2024-06-16T05:41:53.000Z">
-<meta property="article:modified_time" content="2024-06-16T05:50:58.230Z">
+<meta property="article:modified_time" content="2024-06-16T06:09:43.697Z">
 <meta property="article:author" content="schwarZfahreR">
 <meta property="article:tag" content="PyTorch源码学习">
 <meta name="twitter:card" content="summary_large_image">
@@ -323,7 +323,7 @@
               <div class="markdown-body">
                 
                 <p>学习源码的第一步，当然是编译了。无论是调试学习还是修改验证，编译都是必须迈过的坎儿。学习计算机这些年，对于这种大型项目的编译，我是比较怵的，搭个编译环境就已经很困难了，更不要提过程中的各种报错了。好在现在可以在docker中编译，环境崩了咱就推到重来，不至于重装系统了。</p>
-<h1 id="前期准备"><a href="#前期准备" class="headerlink" title="前期准备"></a>前期准备</h1><p>本文使用<a target="_blank" rel="noopener" href="https://leimao.github.io/blog/Build-Develop-PyTorch/%E4%B8%AD%E6%8F%90%E4%BE%9B%E7%9A%84docker">https://leimao.github.io/blog/Build-Develop-PyTorch/中提供的docker</a> file，编译的是GPU版本的pytorch 2.1.0，基于ubuntu22.04+cuda12.1+cudnn8，需要查询下你的GPU是否支持：</p>
+<h1 id="前期准备"><a href="#前期准备" class="headerlink" title="前期准备"></a>前期准备</h1><p>本文使用<a target="_blank" rel="noopener" href="https://leimao.github.io/blog/Build-Develop-PyTorch">Lei Mao’s LOG BOOK</a>中提供的docker file，编译的是GPU版本的pytorch 2.1.0，基于ubuntu22.04+cuda12.1+cudnn8，需要查询下你的GPU是否支持：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">nvidia-smi<br></code></pre></td></tr></table></figure>
 
 <p><img src="https://picgozz.oss-cn-beijing.aliyuncs.com/img/202406161343199.png" srcset="/img/loading.gif" lazyload alt="image-20240616112231819"></p>
