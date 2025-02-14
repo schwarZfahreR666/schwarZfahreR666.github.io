@@ -261,7 +261,7 @@
       
       <a class="index-excerpt index-excerpt__noimg" href="/2025/02/12/PyTorch%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB-Tensor%E7%9A%84COW%E6%9C%BA%E5%88%B6/" target="_self">
         <div>
-          〇、COW(copy on write)是一种常用的节约内存的手段：当要制作一个对象的副本时，先不做deep-copy，而是用某种方法使副本与原件共享存储，当其中一个对象要被修改时再做拷贝，可以认为是一种lazy的拷贝模式。PyTorch中的Tensor也实现了这个机制，只是截止2.4版本，还没有大规模应用。但了解一下这个特性，也会给我们对pytorch的开发优化提供新思路。 0、Tensor的v
+          〇、背景COW(copy on write)是一种常用的节约内存的手段：当要制作一个对象的副本时，先不做deep-copy，而是用某种方法使副本与原件共享存储，当其中一个对象要被修改时再做拷贝，可以认为是一种lazy的拷贝模式。PyTorch中的Tensor也实现了这个机制，只是截止2.4版本，还没有大规模应用。但了解一下这个特性，也会给我们对pytorch的开发优化提供新思路。 0x00、Ten
         </div>
       </a>
 
