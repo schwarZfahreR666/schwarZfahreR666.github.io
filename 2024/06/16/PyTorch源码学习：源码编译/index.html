@@ -27,7 +27,7 @@
 <meta property="og:image" content="https://picgozz.oss-cn-beijing.aliyuncs.com/img/202406161343241.png">
 <meta property="og:image" content="https://picgozz.oss-cn-beijing.aliyuncs.com/img/202406161343285.png">
 <meta property="article:published_time" content="2024-06-16T05:41:53.000Z">
-<meta property="article:modified_time" content="2024-06-24T15:20:29.000Z">
+<meta property="article:modified_time" content="2025-05-14T15:16:41.829Z">
 <meta property="article:author" content="schwarZfahreR">
 <meta property="article:tag" content="PyTorch源码学习">
 <meta name="twitter:card" content="summary_large_image">
@@ -314,7 +314,7 @@
               <p id="updated-time" class="note note-info" style="">
                 
                   
-                    本文最后更新于 2024年6月24日 晚上
+                    本文最后更新于 2025年5月14日 晚上
                   
                 
               </p>
@@ -388,7 +388,7 @@
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_">&gt;</span><span class="language-bash">git config --global --add safe.directory <span class="hljs-string">&quot;*&quot;</span></span><br></code></pre></td></tr></table></figure>
 </blockquote>
 <h2 id="五、开始编译"><a href="#五、开始编译" class="headerlink" title="五、开始编译"></a>五、开始编译</h2><p>保持在pytorch源代码目录下，进行编译操作。</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">export CMAKE_PREFIX_PATH=$&#123;CONDA_PREFIX:-&quot;$(dirname $(which conda))/../&quot;&#125;<br>MAX_JOBS=4 DEBUG=1 USE_DISTRIBUTED=0 BUILD_TEST=1 python setup.py develop<br></code></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs shell">export CMAKE_PREFIX_PATH=$&#123;CONDA_PREFIX:-&quot;$(dirname $(which conda))/../&quot;&#125;<br>MAX_JOBS=4 DEBUG=1 USE_DISTRIBUTED=0 BUILD_TEST=1 python setup.py develop<br>USE_NINJA=0 MAX_JOBS=4 DEBUG=1 USE_DISTRIBUTED=0 python setup.py develop<br></code></pre></td></tr></table></figure>
 
 <p>如果编译失败，执行以下命令，然后再重新编译：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">python setup.py clean<br></code></pre></td></tr></table></figure>
