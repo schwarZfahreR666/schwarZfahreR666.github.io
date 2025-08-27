@@ -16,15 +16,15 @@
   <meta name="author" content="schwarZfahreR">
   <meta name="keywords" content="">
   
-    <meta name="description" content="直接使用docker最方便，dockerfile： 123456789101112131415161718192021222324252627282930FROM ubuntu:22.04ENV DEBIAN_FRONTEND&#x3D;noninteractive TZ&#x3D;Asia&#x2F;Shanghai# 创建用户 openwrt 并设置密码（这里设置为 openwrt）RUN useradd -m -s &#x2F;b">
+    <meta name="description" content="0、编译固件直接使用docker最方便，dockerfile： 123456789101112131415161718192021222324252627282930FROM ubuntu:22.04ENV DEBIAN_FRONTEND&#x3D;noninteractive TZ&#x3D;Asia&#x2F;Shanghai# 创建用户 openwrt 并设置密码（这里设置为 openwrt）RUN useradd -m">
 <meta property="og:type" content="article">
 <meta property="og:title" content="编译openwrt">
 <meta property="og:url" content="https://schwarzfahrer666.github.io/2025/08/27/%E7%BC%96%E8%AF%91openwrt/index.html">
 <meta property="og:site_name" content="白嫖笔记">
-<meta property="og:description" content="直接使用docker最方便，dockerfile： 123456789101112131415161718192021222324252627282930FROM ubuntu:22.04ENV DEBIAN_FRONTEND&#x3D;noninteractive TZ&#x3D;Asia&#x2F;Shanghai# 创建用户 openwrt 并设置密码（这里设置为 openwrt）RUN useradd -m -s &#x2F;b">
+<meta property="og:description" content="0、编译固件直接使用docker最方便，dockerfile： 123456789101112131415161718192021222324252627282930FROM ubuntu:22.04ENV DEBIAN_FRONTEND&#x3D;noninteractive TZ&#x3D;Asia&#x2F;Shanghai# 创建用户 openwrt 并设置密码（这里设置为 openwrt）RUN useradd -m">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2025-08-26T16:28:55.000Z">
-<meta property="article:modified_time" content="2025-08-26T16:45:08.105Z">
+<meta property="article:modified_time" content="2025-08-27T13:32:07.640Z">
 <meta property="article:author" content="schwarZfahreR">
 <meta name="twitter:card" content="summary_large_image">
   
@@ -248,7 +248,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          319 字
+          575 字
         
       </span>
     
@@ -259,7 +259,7 @@
         
         
         
-          3 分钟
+          5 分钟
         
       </span>
     
@@ -309,7 +309,7 @@
               <p id="updated-time" class="note note-info" style="">
                 
                   
-                    本文最后更新于 2025年8月27日 凌晨
+                    本文最后更新于 2025年8月27日 晚上
                   
                 
               </p>
@@ -317,7 +317,7 @@
             
               <div class="markdown-body">
                 
-                <p>直接使用docker最方便，dockerfile：</p>
+                <h1 id="0、编译固件"><a href="#0、编译固件" class="headerlink" title="0、编译固件"></a>0、编译固件</h1><p>直接使用docker最方便，dockerfile：</p>
 <figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs dockerfile"><span class="hljs-keyword">FROM</span> ubuntu:<span class="hljs-number">22.04</span><br><br><span class="hljs-keyword">ENV</span> DEBIAN_FRONTEND=noninteractive TZ=Asia/Shanghai<br><br><br><span class="hljs-comment"># 创建用户 openwrt 并设置密码（这里设置为 openwrt）</span><br><span class="hljs-keyword">RUN</span><span class="language-bash"> useradd -m -s /bin/bash openwrt &amp;&amp; \</span><br><span class="language-bash">    <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;openwrt:openwrt&quot;</span> | chpasswd &amp;&amp; \</span><br><span class="language-bash">    usermod -aG sudo openwrt</span><br><br><span class="hljs-comment"># 更新并安装 OpenWrt 编译依赖</span><br><span class="hljs-keyword">RUN</span><span class="language-bash"> apt update -y &amp;&amp; \</span><br><span class="language-bash">apt full-upgrade -y &amp;&amp; \</span><br><span class="language-bash">apt install -y sudo ack antlr3 asciidoc autoconf automake autopoint binutils bison build-essential \</span><br><span class="language-bash">bzip2 ccache clang cmake cpio curl device-tree-compiler flex gawk gcc-multilib g++-multilib gettext \</span><br><span class="language-bash">genisoimage git gperf haveged help2man intltool libc6-dev-i386 libelf-dev libfuse-dev libglib2.0-dev \</span><br><span class="language-bash">libgmp3-dev libltdl-dev libmpc-dev libmpfr-dev libncurses5-dev libncursesw5-dev libpython3-dev \</span><br><span class="language-bash">libreadline-dev libssl-dev libtool llvm lrzsz msmtp ninja-build p7zip p7zip-full patch pkgconf \</span><br><span class="language-bash">python3 python3-pyelftools python3-setuptools qemu-utils rsync scons squashfs-tools subversion \</span><br><span class="language-bash">swig texinfo uglifyjs upx-ucl unzip vim wget xmlto xxd zlib1g-dev</span><br><br><span class="hljs-comment"># 设置工作目录</span><br><span class="hljs-keyword">WORKDIR</span><span class="language-bash"> /home/openwrt</span><br><br><span class="hljs-comment"># 切换到 openwrt 用户</span><br><span class="hljs-keyword">USER</span> openwrt<br><br><br><span class="hljs-comment"># 默认进入 bash</span><br><span class="hljs-keyword">CMD</span><span class="language-bash"> [<span class="hljs-string">&quot;/bin/bash&quot;</span>]</span><br></code></pre></td></tr></table></figure>
 
 <p>dockerfile中没有换国内源，构建镜像速度可能略慢。</p>
@@ -335,6 +335,28 @@
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">make V=s -j1<br></code></pre></td></tr></table></figure>
 
 <p>编译成功后可以从源码目录下的&#x2F;bin目录中找到固件和软件的ipk。</p>
+<h1 id="1、存储扩容"><a href="#1、存储扩容" class="headerlink" title="1、存储扩容"></a>1、存储扩容</h1><p>如果路由器本身的闪存比较小，又有usb接口或者存储卡插槽的话，推荐扩容u盘作为根目录，方便安装更多的App。</p>
+<p>如果要使用usb扩展，一定要在编译时把相关的mod添加进去，在menuconfig中选择以下配置:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs bash">Base system  ---&gt;<br>    &lt;*&gt; block-mount<br>    &lt;*&gt; kmod-fs-ext4<br>    &lt;*&gt; kmod-usb-storage<br>    &lt;*&gt; e2fsprogs<br></code></pre></td></tr></table></figure>
+
+<p>编译完成后，正常刷写固件，然后ssh到路由器上进行扩容：</p>
+<p>查看U盘设备节点：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">block info<br></code></pre></td></tr></table></figure>
+
+<p>假设设备为&#x2F;dev&#x2F;sda1，先尝试卸载挂载：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">umount /dev/sda1<br></code></pre></td></tr></table></figure>
+
+<p>如果失败则说明没有挂载，直接进行下一步，格式化U盘&#x2F;SD卡</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">mkfs.ext4 /dev/sda1<br></code></pre></td></tr></table></figure>
+
+<p>给U盘&#x2F;SD卡制作根文件系统:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs bash">mount /dev/sda1 /mnt<br><span class="hljs-built_in">mkdir</span> /tmp/root<br>mount -o <span class="hljs-built_in">bind</span> / /tmp/root<br><span class="hljs-built_in">cp</span> /tmp/root/* /mnt -a<br>umount /tmp/root<br>umount /mnt<br></code></pre></td></tr></table></figure>
+
+<p>配置自动挂载并重启路由:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs bash">block detect &gt; /etc/config/fstab<br>uci <span class="hljs-built_in">set</span> fstab.[@mount](https://weibo.com/n/mount)[0].target=<span class="hljs-string">&#x27;/overlay&#x27;</span><br>uci <span class="hljs-built_in">set</span> fstab.[@mount](https://weibo.com/n/mount)[0].enabled=<span class="hljs-string">&#x27;1&#x27;</span><br>uci commit fstab<br><br>reboot<br></code></pre></td></tr></table></figure>
+
+
+
 
                 
               </div>
